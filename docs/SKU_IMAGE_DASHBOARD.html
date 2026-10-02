@@ -1,0 +1,550 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SKU Image Dashboard</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #080b12;
+      --panel: #111722;
+      --panel-2: #161d2a;
+      --line: rgba(255, 255, 255, 0.1);
+      --text: #f7f8fb;
+      --muted: #9aa3b2;
+      --soft: #c8ced8;
+      --accent: #7c5cff;
+      --accent-2: #22d3ee;
+      --ok: #3ddc97;
+      --shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(124, 92, 255, 0.22), transparent 34rem),
+        radial-gradient(circle at top right, rgba(34, 211, 238, 0.16), transparent 30rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 32px 0 56px;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 20px;
+      align-items: end;
+      margin-bottom: 22px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent-2);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: 0.95;
+      letter-spacing: -0.055em;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 12px 0 0;
+      color: var(--soft);
+      font-size: 15px;
+      line-height: 1.55;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(110px, 1fr));
+      gap: 10px;
+    }
+
+    .stat {
+      min-width: 132px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(17, 23, 34, 0.78);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    .stat strong {
+      display: block;
+      margin-top: 8px;
+      font-size: 28px;
+      line-height: 1;
+      letter-spacing: -0.04em;
+    }
+
+    .toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      margin: 0 0 18px;
+      padding: 12px 0;
+      background: linear-gradient(180deg, rgba(8, 11, 18, 0.94), rgba(8, 11, 18, 0.78));
+      backdrop-filter: blur(16px);
+    }
+
+    .search {
+      width: 100%;
+      height: 48px;
+      padding: 0 16px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      outline: none;
+      background: rgba(17, 23, 34, 0.86);
+      color: var(--text);
+    }
+
+    .search:focus {
+      border-color: rgba(124, 92, 255, 0.72);
+      box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.14);
+    }
+
+    .copy-all {
+      height: 48px;
+      padding: 0 18px;
+      border: 0;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--accent), #4f46e5);
+      cursor: pointer;
+      font-weight: 750;
+      white-space: nowrap;
+      box-shadow: 0 14px 36px rgba(79, 70, 229, 0.28);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: linear-gradient(180deg, rgba(22, 29, 42, 0.9), rgba(13, 18, 28, 0.92));
+      box-shadow: var(--shadow);
+    }
+
+    .image-wrap {
+      position: relative;
+      display: grid;
+      place-items: center;
+      aspect-ratio: 1 / 1;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent),
+        #eef1f6;
+    }
+
+    .image-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      padding: 18px;
+      transition: transform 180ms ease;
+    }
+
+    .card:hover img {
+      transform: scale(1.025);
+    }
+
+    .brand {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      max-width: calc(100% - 24px);
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(8, 11, 18, 0.78);
+      color: #fff;
+      font-size: 12px;
+      font-weight: 750;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      backdrop-filter: blur(10px);
+    }
+
+    .body {
+      display: grid;
+      gap: 12px;
+      padding: 15px;
+    }
+
+    .title {
+      min-height: 44px;
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--soft);
+      background: rgba(255, 255, 255, 0.04);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .sku-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      padding: 10px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .sku {
+      min-width: 0;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 13px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .copy {
+      height: 34px;
+      padding: 0 12px;
+      border: 1px solid rgba(124, 92, 255, 0.42);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(124, 92, 255, 0.2);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .copy.copied {
+      border-color: rgba(61, 220, 151, 0.48);
+      color: #d9fff0;
+      background: rgba(61, 220, 151, 0.18);
+    }
+
+    .empty,
+    .image-error {
+      display: none;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .empty {
+      margin: 36px 0;
+      padding: 28px;
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      background: rgba(17, 23, 34, 0.75);
+    }
+
+    .image-error {
+      position: absolute;
+      inset: 0;
+      place-items: center;
+      padding: 18px;
+      background: #111722;
+      font-weight: 700;
+    }
+
+    .toast {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      z-index: 20;
+      transform: translateY(18px);
+      opacity: 0;
+      pointer-events: none;
+      padding: 12px 16px;
+      border: 1px solid rgba(61, 220, 151, 0.34);
+      border-radius: 999px;
+      color: #eafff6;
+      background: rgba(12, 27, 23, 0.9);
+      box-shadow: var(--shadow);
+      transition: opacity 160ms ease, transform 160ms ease;
+      backdrop-filter: blur(14px);
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    @media (max-width: 720px) {
+      .shell {
+        width: min(100% - 22px, 560px);
+        padding-top: 22px;
+      }
+
+      .hero {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .toolbar {
+        grid-template-columns: 1fr;
+      }
+
+      .copy-all {
+        width: 100%;
+      }
+
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Culture Circle SKU tools</p>
+        <h1>SKU Image Dashboard</h1>
+        <p>Resolved through the Culture Circle product GraphQL API and embedded here for quick review. Each card has its own one-click SKU copy action.</p>
+      </div>
+      <div class="stats">
+        <div class="stat">
+          <span>Total SKUs</span>
+          <strong id="totalCount">37</strong>
+        </div>
+        <div class="stat">
+          <span>Images Found</span>
+          <strong id="foundCount">37</strong>
+        </div>
+      </div>
+    </section>
+
+    <section class="toolbar" aria-label="Dashboard controls">
+      <input class="search" id="searchInput" type="search" placeholder="Search SKU, title, or brand">
+      <button class="copy-all" id="copyAllButton" type="button">Copy all SKUs</button>
+    </section>
+
+    <section class="grid" id="skuGrid" aria-live="polite"></section>
+    <p class="empty" id="emptyState">No SKUs match that search.</p>
+  </main>
+  <div class="toast" id="toast">Copied</div>
+
+  <script>
+    const products = [
+      {"sku":"CTCITIRT281","found":true,"title":"City Off Domes The Neymar Archive White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-the-neymar-archive-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesTheNeymarArchiveWhiteT-shirtBack.png?v=1781721352&width=800"},
+      {"sku":"CTCITIRT844","found":true,"title":"City Off Domes The Captain's Archive White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-the-captains-archive-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesTheCaptain_sArchiveWhiteT-shirtBack.png?v=1781723868&width=800"},
+      {"sku":"CTCITIRT624","found":true,"title":"City Off Domes Sunset in Spain Red T-Shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-sunset-in-spain-red-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesSunsetinSpainRedT-ShirtBack.png?v=1781721266&width=800"},
+      {"sku":"CT00780CITIRT574","found":true,"title":"City Off Domes Sakura Legacy White T-Shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-sakura-legacy-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesSakuraLegacyWhiteT-ShirtBack.png?v=1781720869&width=800"},
+      {"sku":"CT16524CITIRT444","found":true,"title":"City Off Domes Rues de Paris White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-rues-de-paris-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesRuesdeParisWhiteT-shirtFront.png?v=1781721534&width=800"},
+      {"sku":"CTCITIRT887","found":true,"title":"City Off Domes One Last Dance Brown T-Shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-one-last-dance-brown-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesOneLastDanceBrownT-ShirtBack.png?v=1781723648&width=800"},
+      {"sku":"CTCITIRT924","found":true,"title":"City Off Domes One Last Dance Black T-Shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-one-last-dance-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesOneLastDanceBlackT-ShirtBack.png?v=1781723745&width=800"},
+      {"sku":"CTCITIRT401","found":true,"title":"City Off Domes Mexico Magic White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-mexico-magic-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesMexicoMagicWhiteT-shirtBack.png?v=1781723373&width=800"},
+      {"sku":"CTCITIRT849","found":true,"title":"City Off Domes Matchday Ritual White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-matchday-ritual-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesMatchdayRitualWhiteT-shirtBack.png?v=1781723955&width=800"},
+      {"sku":"CTCITIRT696","found":true,"title":"City Off Domes Kickoff '94 White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-kickoff-94-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesKickoff_94WhiteT-shirtBack.png?v=1781719971&width=800"},
+      {"sku":"CTCITIRT038","found":true,"title":"City Off Domes Kickin Crow White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-kickin-crow-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesKickinCrowWhiteT-shirtBack.png?v=1781720976&width=800"},
+      {"sku":"CTCITIRT020","found":true,"title":"City Off Domes Freedom Flyer White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-freedom-flyer-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesFreedomFlyerWhiteT-shirtFront.png?v=1781722541&width=800"},
+      {"sku":"CTCITIRT341","found":true,"title":"City Off Domes Espana Heritage White T-shirt","brandName":"City of Domes","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"city-off-domes-espana-heritage-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0717/0926/1996/files/CityOffDomesEspanaHeritageWhiteT-shirtBack_a0b5ad65-fcf2-4297-9c24-6b4dc316d8b9.png?v=1781721095&width=800"},
+      {"sku":"95457OFFIRT049","found":true,"title":"Off Supply Yamal Rising Red T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-yamal-rising-red-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyYamalRisingRedTShirtBack.png?v=1781766437&width=800"},
+      {"sku":"OFFIRT000","found":true,"title":"Off Supply World Cup Glory Blue T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-world-cup-glory-blue-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyWorldCupGloryBlueTShirtBACK.png?v=1781766385&width=800"},
+      {"sku":"98849OFFIRT640","found":true,"title":"Off Supply World Cup 26 White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"sports t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-world-cup-26-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyWorldCup26WhiteTShirtBack.png?v=1781766334&width=800"},
+      {"sku":"OFFIRT273","found":true,"title":"Off Supply Wirtz Spirit Red T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"sports t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-wirtz-spirit-red-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyWirtzSpiritRedTShirtBACK.png?v=1781766289&width=800"},
+      {"sku":"OFFIRT314","found":true,"title":"Off Supply Vini Strike White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-vini-strike-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyViniStrikeWhiteTShirtBACK.png?v=1781766233&width=800"},
+      {"sku":"07329OFFIRT721","found":true,"title":"Off Supply Trophy 26 Blue T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"sports t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-trophy-26-blue-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyTrophy26BlueTShirtBACK.png?v=1781766109&width=800"},
+      {"sku":"76257OFFIRT077","found":true,"title":"Off Supply Ronaldo Vision White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-ronaldo-vision-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyRonaldoVisionWhiteTShirtBACK.png?v=1781766051&width=800"},
+      {"sku":"OFFIRT830","found":true,"title":"Off Supply Road To Hexa Black T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-road-to-hexa-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyRoadToHexaBlackTShirtBACK.png?v=1781765945&width=800"},
+      {"sku":"OFFIRT398","found":true,"title":"Off Supply Red Fury Black T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-red-fury-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyRedFuryBlackTShirtBack.png?v=1781765871&width=800"},
+      {"sku":"48577OFFIRT820","found":true,"title":"Off Supply Prism Trophy Black T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-prism-trophy-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyPrismTrophyBlackTShirtBack.png?v=1781765826&width=800"},
+      {"sku":"OFFIRT143","found":true,"title":"Off Supply Portugal 26 Black T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-portugal-26-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyPortugal26BlackTShirtFront.png?v=1781765763&width=800"},
+      {"sku":"OFFIRT027","found":true,"title":"Off Supply Mexico Crown White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-mexico-crown-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyMexicoCrownWhiteTShirtBack1.png?v=1781765707&width=800"},
+      {"sku":"OFFIRT295","found":true,"title":"Off Supply Messi Icon Black T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-messi-icon-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyMessiIconBlackTShirtBack.png?v=1781765649&width=800"},
+      {"sku":"OFFIRT815","found":true,"title":"Off Supply Mbappé Pulse White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-mbappe-pulse-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyMbappePulseWhiteTShirtBACK.png?v=1781765513&width=800"},
+      {"sku":"OFFIRT324","found":true,"title":"Off Supply Mbappé Velocity White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-mbappe-velocity-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyMbappeVelocityWhiteTShirtBACK.png?v=1781765590&width=800"},
+      {"sku":"OFFIRT208","found":true,"title":"Off Supply Leo Legacy Blue T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-leo-legacy-blue-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyLeoLegacyBlueTShirtBack.png?v=1781765411&width=800"},
+      {"sku":"OFFIRT061","found":true,"title":"Off Supply Germany Trophy White T-Shirt","brandName":"Off Supply","category":"activewear","subCategory":"sports t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-germany-trophy-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyGermanyTrophyWhiteTShirtFRONT.png?v=1781765348&width=800"},
+      {"sku":"OFFIRT972","found":true,"title":"Off Supply France Block White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-france-block-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyFranceBlockWhiteTShirtFRONT.png?v=1781765266&width=800"},
+      {"sku":"OFFIRT341","found":true,"title":"Off Supply First Star Black T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-first-star-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyFirstStarBlackTShirtBack.png?v=1781764729&width=800"},
+      {"sku":"OFFIRT202","found":true,"title":"Off Supply FIFA 26 Legacy White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-fifa-26-legacy-white-t-shirt-back","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyFIFA26LegacyWhiteTShirtBack.png?v=1781764608&width=800"},
+      {"sku":"OFFIRT304","found":true,"title":"Off Supply CR7 Legacy Black T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-cr7-legacy-black-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyCR7LegacyBlackTShirtBack.png?v=1781764516&width=800"},
+      {"sku":"OFFIRT656","found":true,"title":"Off Supply Brazil Heritage White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-brazil-heritage-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyBrazilHeritageWhiteTShirtBACK.png?v=1781764430&width=800"},
+      {"sku":"OFFIRT491","found":true,"title":"Off Supply Bleu Blanc White T-Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-bleu-blanc-white-t-shirt","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyBleuBlancWhiteTShirtback.png?v=1781764306&width=800"},
+      {"sku":"OFFIRT068","found":true,"title":"Off Supply Bellingham Echo Black T Shirt","brandName":"Off Supply","category":"tops","subCategory":"t shirt","lowestPrice":2499,"marketCurrency":"INR","slug":"off-supply-bellingham-echo-black-t-shirt-back","imageUrl":"https://cdn.shopify.com/s/files/1/0960/7869/2673/files/OffSupplyBellinghamEchoBlackTShirtBack.png?v=1781764105&width=800"}
+    ];
+
+    const grid = document.getElementById("skuGrid");
+    const emptyState = document.getElementById("emptyState");
+    const searchInput = document.getElementById("searchInput");
+    const copyAllButton = document.getElementById("copyAllButton");
+    const toast = document.getElementById("toast");
+    let toastTimer;
+
+    document.getElementById("totalCount").textContent = products.length;
+    document.getElementById("foundCount").textContent = products.filter((product) => product.found && product.imageUrl).length;
+
+    function formatPrice(product) {
+      if (!product.lowestPrice) return "No price";
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: product.marketCurrency || "INR",
+        maximumFractionDigits: 0
+      }).format(product.lowestPrice);
+    }
+
+    function showToast(message) {
+      clearTimeout(toastTimer);
+      toast.textContent = message;
+      toast.classList.add("show");
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 1400);
+    }
+
+    async function copyText(text) {
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+      } catch (error) {
+        // Fall through to textarea fallback.
+      }
+
+      const textarea = document.createElement("textarea");
+      textarea.value = text;
+      textarea.setAttribute("readonly", "");
+      textarea.style.position = "fixed";
+      textarea.style.left = "-9999px";
+      document.body.appendChild(textarea);
+      textarea.select();
+      const ok = document.execCommand("copy");
+      textarea.remove();
+      return ok;
+    }
+
+    function render(items) {
+      grid.innerHTML = "";
+      emptyState.style.display = items.length ? "none" : "block";
+
+      const fragment = document.createDocumentFragment();
+      items.forEach((product) => {
+        const card = document.createElement("article");
+        card.className = "card";
+        card.dataset.search = `${product.sku} ${product.title} ${product.brandName}`.toLowerCase();
+
+        card.innerHTML = `
+          <div class="image-wrap">
+            <span class="brand">${product.brandName || "Unknown brand"}</span>
+            <img src="${product.imageUrl}" alt="${product.title || product.sku}" loading="lazy">
+            <div class="image-error">Image unavailable</div>
+          </div>
+          <div class="body">
+            <p class="title">${product.title || "Product not found"}</p>
+            <div class="meta">
+              <span class="pill">${product.subCategory || product.category || "Product"}</span>
+              <span class="pill">${formatPrice(product)}</span>
+            </div>
+            <div class="sku-row">
+              <span class="sku" title="${product.sku}">${product.sku}</span>
+              <button class="copy" type="button" data-sku="${product.sku}">Copy</button>
+            </div>
+          </div>
+        `;
+
+        const img = card.querySelector("img");
+        const imageError = card.querySelector(".image-error");
+        img.addEventListener("error", () => {
+          img.style.display = "none";
+          imageError.style.display = "grid";
+        });
+
+        fragment.appendChild(card);
+      });
+      grid.appendChild(fragment);
+    }
+
+    function filterProducts() {
+      const term = searchInput.value.trim().toLowerCase();
+      if (!term) {
+        render(products);
+        return;
+      }
+      render(products.filter((product) => `${product.sku} ${product.title} ${product.brandName}`.toLowerCase().includes(term)));
+    }
+
+    grid.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-sku]");
+      if (!button) return;
+      const sku = button.dataset.sku;
+      const ok = await copyText(sku);
+      if (!ok) return;
+
+      button.classList.add("copied");
+      button.textContent = "Copied";
+      showToast(`${sku} copied`);
+      setTimeout(() => {
+        button.classList.remove("copied");
+        button.textContent = "Copy";
+      }, 1100);
+    });
+
+    copyAllButton.addEventListener("click", async () => {
+      const ok = await copyText(products.map((product) => product.sku).join("\\n"));
+      if (ok) showToast("All SKUs copied");
+    });
+
+    searchInput.addEventListener("input", filterProducts);
+    render(products);
+  </script>
+</body>
+</html>

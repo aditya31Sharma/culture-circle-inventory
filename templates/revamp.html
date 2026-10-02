@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Website Revamp — Culture Circle{% endblock %}
+{% block page_title %}Website Revamp{% endblock %}
+
+{% block extra_head %}
+<style>
+  .revamp-store { background: var(--ink-2); border: 1px solid var(--line); border-radius: 16px; padding: 20px 22px; margin-bottom: 18px; }
+  .revamp-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap; }
+  .revamp-name { font-size: 1.15rem; font-weight: 700; color: var(--ivory); }
+  .revamp-domain { color: var(--muted); font-size:.82rem; font-family:'JetBrains Mono',monospace; }
+  .revamp-status { font-size:.72rem; text-transform:uppercase; letter-spacing:.06em; padding:4px 10px; border-radius:999px; border:1px solid var(--gold-line); color:var(--gold-2); background:var(--gold-soft); }
+  .revamp-activity { color: var(--ivory-dim); font-size:.85rem; margin-top:6px; }
+  .revamp-links a { color: var(--gold-2); text-decoration:none; font-size:.82rem; margin-right:14px; }
+  .revamp-links a:hover { text-decoration:underline; }
+  .progress-bar-wrap { height:6px; background:var(--ink-4); border-radius:999px; overflow:hidden; margin:14px 0 4px; }
+  .progress-bar-fill { height:100%; background: var(--gold-grad); }
+  .checklist-table { width:100%; border-collapse:collapse; margin-top:14px; font-size:.82rem; }
+  .checklist-table th { text-align:left; color:var(--muted); font-weight:500; font-size:.7rem; text-transform:uppercase; letter-spacing:.06em; padding:6px 10px; border-bottom:1px solid var(--line); }
+  .checklist-table td { padding:8px 10px; border-bottom:1px solid var(--line); color:var(--ivory-dim); }
+  .checklist-table td.page-cell { color:var(--ivory); font-weight:600; text-transform:capitalize; }
+  .el { display:inline-flex; align-items:center; gap:5px; padding:3px 9px; border-radius:8px; font-size:.74rem; white-space:nowrap; }
+  .el.found { color:var(--green); background:var(--green-soft); }
+  .el.missing { color:var(--red); background:var(--red-soft); }
+  .el.na { color:var(--dim); }
+  .el.planned, .el.building { color:var(--gold-2); background:var(--gold-soft); }
+  .activity-log { margin-top:14px; border-top:1px solid var(--line); padding-top:10px; }
+  .activity-log .row-log { display:flex; gap:10px; font-size:.78rem; color:var(--muted); padding:3px 0; }
+  .activity-log time { font-family:'JetBrains Mono',monospace; color:var(--dim); white-space:nowrap; }
+  .empty-revamp { text-align:center; color:var(--muted); padding:60px 20px; }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if not stores %}
+  <div class="empty-revamp">
+    <i class="bi bi-window-stack" style="font-size:2rem; color:var(--dim);"></i>
+    <p style="margin-top:12px;">No stores in the revamp pipeline yet.</p>
+    <p style="font-size:.82rem;">Run <code>tools/revamp_seed.py</code> for a store to duplicate its theme and audit it.</p>
+  </div>
+{% endif %}
+
+{% for s in stores %}
+  {% set sm = summary.get(s.prefix, {'done':0,'total':0,'pct':0}) %}
+  <div class="revamp-store">
+    <div class="revamp-head">
+      <div>
+        <div class="revamp-name">{{ s.store_name }}</div>
+        <div class="revamp-domain">{{ s.domain }}</div>
+        <div class="revamp-activity"><i class="bi bi-activity"></i> {{ s.current_activity or 'Idle' }}{% if s.current_page %} · on <b>{{ s.current_page }}</b>{% endif %}</div>
+        <div class="revamp-links" style="margin-top:8px;">
+          {% if s.preview_url %}<a href="{{ s.preview_url }}" target="_blank"><i class="bi bi-eye"></i> Preview draft theme</a>{% endif %}
+          {% if s.editor_url %}<a href="{{ s.editor_url }}" target="_blank"><i class="bi bi-pencil-square"></i> Theme editor</a>{% endif %}
+        </div>
+      </div>
+      <div style="text-align:right;">
+        <span class="revamp-status">{{ s.status }}</span>
+        <div style="color:var(--muted); font-size:.72rem; margin-top:8px;">
+          Live: #{{ s.live_theme_id }}<br>Draft: #{{ s.draft_theme_id }}
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width: {{ sm.pct }}%;"></div></div>
+    <div style="font-size:.74rem; color:var(--muted);">{{ sm.done }} / {{ sm.total }} required elements present ({{ sm.pct }}%)</div>
+
+    <table class="checklist-table">
+      <thead>
+        <tr>
+          <th>Page</th>
+          {% for el in elements %}<th>{{ element_labels[el] }}</th>{% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for page in pages %}
+        <tr>
+          <td class="page-cell">{{ page }}</td>
+          {% for el in elements %}
+            {% set cell = checklist.get(s.prefix, {}).get(page, {}).get(el) %}
+            <td>
+              {% if cell %}
+                {% if cell.status == 'found' or cell.status == 'done' %}
+                  <span class="el found"><i class="bi bi-check-circle-fill"></i> {{ cell.status }}{% if cell.evidence %} <span style="opacity:.6">({{ cell.evidence }})</span>{% endif %}</span>
+                {% elif cell.status == 'missing' %}
+                  <span class="el missing"><i class="bi bi-x-circle-fill"></i> missing</span>
+                {% else %}
+                  <span class="el planned"><i class="bi bi-hourglass-split"></i> {{ cell.status }}</span>
+                {% endif %}
+              {% else %}
+                <span class="el na">—</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% set acts = activity.get(s.prefix, []) %}
+    {% if acts %}
+    <div class="activity-log">
+      {% for a in acts[:6] %}
+      <div class="row-log"><time>{{ a.created_at.strftime('%b %d %H:%M') }}</time><span>{{ a.message }}</span></div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+{% endfor %}
+{% endblock %}

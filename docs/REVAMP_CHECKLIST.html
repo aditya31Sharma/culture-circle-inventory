@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Culture Circle — Master Revamp Checklist</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink-0:#0a0a0c;--ink-1:#111114;--ink-2:#16161c;--ink-3:#1c1c24;--ink-4:#24242e;
+    --ivory:#f5f1e8;--ivory-dim:#d8d3c5;--muted:#8a8a96;--dim:#5a5a66;
+    --line:rgba(245,241,232,0.08);--line-2:rgba(245,241,232,0.14);
+    --gold:#d4af72;--gold-2:#e8c994;--gold-soft:rgba(212,175,114,0.14);--gold-line:rgba(212,175,114,0.32);
+    --gold-grad:linear-gradient(135deg,#e8c994 0%,#d4af72 50%,#b8924f 100%);
+    --green:#6ee7a7;--green-soft:rgba(110,231,167,0.12);
+    --blue:#7fb3ff;--blue-soft:rgba(127,179,255,0.12);
+    --purple:#c79bff;--purple-soft:rgba(199,155,255,0.12);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{background:var(--ink-0);color:var(--ivory);font-family:'Inter',sans-serif;padding:48px 56px;line-height:1.5;}
+  .top{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid var(--line-2);padding-bottom:24px;margin-bottom:8px;}
+  h1{font-family:'Instrument Serif',serif;font-size:2.8rem;font-weight:400;letter-spacing:-0.5px;}
+  h1 em{font-style:italic;color:var(--gold-2);}
+  .sub{color:var(--muted);font-size:.9rem;margin-top:6px;max-width:620px;}
+  .src{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--dim);text-align:right;}
+  .legend{display:flex;gap:10px;margin:26px 0 36px;flex-wrap:wrap;}
+  .pill{font-size:.72rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:6px 14px;border-radius:999px;border:1px solid;}
+  .pill.req{color:var(--green);border-color:var(--green-soft);background:var(--green-soft);}
+  .pill.rec{color:var(--blue);border-color:var(--blue-soft);background:var(--blue-soft);}
+  .pill.extra{color:var(--purple);border-color:var(--purple-soft);background:var(--purple-soft);}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:22px;}
+  .card{background:var(--ink-2);border:1px solid var(--line);border-radius:18px;padding:24px 26px;}
+  .card.full{grid-column:1/-1;}
+  .card h2{font-family:'Instrument Serif',serif;font-size:1.5rem;font-weight:400;margin-bottom:4px;display:flex;align-items:center;gap:10px;}
+  .card .count{font-family:'JetBrains Mono',monospace;font-size:.74rem;color:var(--gold-2);background:var(--gold-soft);padding:2px 9px;border-radius:7px;}
+  .card .pg-sub{color:var(--dim);font-size:.78rem;margin-bottom:16px;}
+  .item{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);}
+  .item:last-child{border-bottom:none;}
+  .item .id{font-family:'JetBrains Mono',monospace;font-size:.72rem;color:var(--dim);min-width:30px;padding-top:2px;}
+  .item .name{flex:1;font-size:.92rem;color:var(--ivory-dim);}
+  .item .name b{color:var(--ivory);font-weight:600;}
+  .tag{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:3px 8px;border-radius:6px;white-space:nowrap;}
+  .tag.req{color:var(--green);background:var(--green-soft);}
+  .tag.rec{color:var(--blue);background:var(--blue-soft);}
+  .tag.extra{color:var(--purple);background:var(--purple-soft);}
+  .footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);color:var(--dim);font-size:.78rem;font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+  <div class="top">
+    <div>
+      <h1>Culture Circle <em>Master Checklist</em></h1>
+      <div class="sub">The standard every store is measured against. Extracted from the live Culture Circle frontend (component-by-component), across all major pages.</div>
+    </div>
+    <div class="src">SOURCE: culture_circle_web<br>HomePageClient · CategoryViewNew<br>ProductPageClient · Navbar · Footer</div>
+  </div>
+
+  <div class="legend">
+    <span class="pill req">● Required — every store needs it</span>
+    <span class="pill rec">● Recommended — strong to have</span>
+    <span class="pill extra">● CC-extra — marketplace-specific</span>
+  </div>
+
+  <div class="grid">
+
+    <div class="card full">
+      <h2>Global <span class="count">10 elements</span></h2>
+      <div class="pg-sub">Present on every page · header, search, cart, footer</div>
+      <div class="item"><span class="id">G1</span><span class="name"><b>Navbar</b> with logo</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">G2</span><span class="name"><b>Search bar</b> + live search dropdown</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">G3</span><span class="name"><b>Cart</b> drawer / view-cart button</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">G4</span><span class="name"><b>Mobile hamburger</b> menu</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">G9</span><span class="name"><b>Footer</b> with link columns</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">G5</span><span class="name">Delivery-location / pincode row</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">G7</span><span class="name">Help dropdown</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">G10</span><span class="name">Announcement / narrow strip</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">G6</span><span class="name">Country / region picker</span><span class="tag extra">CC-extra</span></div>
+      <div class="item"><span class="id">G8</span><span class="name">App-download banner</span><span class="tag extra">CC-extra</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Home <span class="count">16 elements</span></h2>
+      <div class="pg-sub">templates/index · the landing experience</div>
+      <div class="item"><span class="id">H1</span><span class="name"><b>Hero banner</b> (autoplay carousel)</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">H5</span><span class="name"><b>Tabbed category</b> showcase</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">H6</span><span class="name"><b>Category cards</b> showcase</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">H7</span><span class="name"><b>Trending products</b></span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">H14</span><span class="name"><b>Assurances</b> + product benefits</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">H2</span><span class="name">Drop banner / featured drop</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H3</span><span class="name">Flat banners rail</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H4</span><span class="name">Brand strip / logo wall</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H8</span><span class="name">Luxury / curated showcase</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H9</span><span class="name">Sneaker / vertical showcase</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H10</span><span class="name">Instant-shipping highlight</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H13</span><span class="name">Looks / lookbook</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H16</span><span class="name">Testimonials</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">H11</span><span class="name">Social proof (Shark Tank / press)</span><span class="tag extra">CC-extra</span></div>
+      <div class="item"><span class="id">H12</span><span class="name">For-Me / personalization</span><span class="tag extra">CC-extra</span></div>
+      <div class="item"><span class="id">H15</span><span class="name">Store experience / locations</span><span class="tag extra">CC-extra</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Collection <span class="count">11 elements</span></h2>
+      <div class="pg-sub">templates/collection · category browse</div>
+      <div class="item"><span class="id">C1</span><span class="name"><b>Breadcrumb</b></span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">C2</span><span class="name"><b>Category header</b> / title</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">C4</span><span class="name"><b>Filters</b> (active + inline strip)</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">C5</span><span class="name"><b>Sort</b> control</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">C6</span><span class="name"><b>Scrollable vertical product grid</b></span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">C7</span><span class="name"><b>Consistent product cards</b></span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">C10</span><span class="name"><b>Explore-more</b> / pagination</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">C3</span><span class="name">Category banner</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">C8</span><span class="name">Sub-brand carousel</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">C9</span><span class="name">Sold-out / fomo treatment</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">C11</span><span class="name">Category SEO content block</span><span class="tag rec">Recommended</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Product / PDP <span class="count">13 elements</span></h2>
+      <div class="pg-sub">templates/product · the buy page</div>
+      <div class="item"><span class="id">P1</span><span class="name"><b>Image gallery</b> / carousel</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P2</span><span class="name"><b>Product header</b> (title, price)</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P3</span><span class="name"><b>Variant / family</b> selector</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P4</span><span class="name"><b>Size selector</b></span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P5</span><span class="name"><b>Buy / Add-to-cart</b> button</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P6</span><span class="name"><b>Delivery info</b> + pincode check</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P7</span><span class="name"><b>Authenticity</b> / cert badges</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P8</span><span class="name"><b>Spec tiles</b> / details</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P11</span><span class="name"><b>Featured / related</b> products carousel</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">P9</span><span class="name">EMI / payment options</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">P12</span><span class="name">Style looks / pairs-with</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">P13</span><span class="name">Drop note / culture note</span><span class="tag rec">Recommended</span></div>
+      <div class="item"><span class="id">P10</span><span class="name">Seller comparison</span><span class="tag extra">CC-extra</span></div>
+    </div>
+
+    <div class="card">
+      <h2>Cart / Checkout <span class="count">5 elements</span></h2>
+      <div class="pg-sub">templates/cart · path to purchase</div>
+      <div class="item"><span class="id">K1</span><span class="name"><b>Cart line items</b> (image + qty)</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">K2</span><span class="name"><b>Order summary</b> + total</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">K3</span><span class="name"><b>Checkout CTA</b></span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">K5</span><span class="name"><b>Empty-cart</b> state</span><span class="tag req">Required</span></div>
+      <div class="item"><span class="id">K4</span><span class="name">Trust / assurance row</span><span class="tag rec">Recommended</span></div>
+    </div>
+
+  </div>
+
+  <div class="footer">55 total elements · 31 Required · 17 Recommended · 7 CC-extra &nbsp;|&nbsp; Audit bar: ALL tiers (incl CC-extra) per your call</div>
+</body>
+</html>

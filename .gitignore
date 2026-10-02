@@ -44,3 +44,6 @@ routes/TRADEOFF_CONTEXT.md
 routes/donation-pledge-cart.md
 routes/claude_*.zip
 routes/culture_circle_inventory/
+.gstack/
+.revamp-themes/
+.secrets/
